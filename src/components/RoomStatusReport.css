@@ -1,0 +1,32 @@
+.room-status-report {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.room-status-report .ant-radio-group {
+    margin-bottom: 16px;
+}
+
+.room-status-report .line-chart-container {
+    height: 300px;
+    background-color: #f0f2f5;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.room-status-report .no-data {
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+    margin-top: 2rem;
+}
+
+.room-status-report .ant-table-wrapper {
+    margin-top: 2rem;
+}
+
+.room-status-report .ant-btn {
+    margin-left: 8px;
+}
