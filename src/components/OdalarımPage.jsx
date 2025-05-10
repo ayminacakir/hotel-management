@@ -14,11 +14,18 @@ function OdalarimPage() {
     const [kisiSayisi, setKisiSayisi] = useState("");
     const [secilenOda, setSecilenOda] = useState(null);
 
-    // Initialize with 3 empty rooms
+    // Initialize with 10 empty rooms
     const [odalar, setOdalar] = useState([
-        { no: 0, tur: "", kackisi: "", },
-        { no: 1, tur: "", kackisi: "", },
-        { no: 2, tur: "", kackisi: "", },
+        { no: 0, tur: "", durum: "Boş", kackisi: "", neZaman: null },
+        { no: 1, tur: "", durum: "Boş", kackisi: "", neZaman: null },
+        { no: 2, tur: "", durum: "Boş", kackisi: "", neZaman: null },
+        { no: 3, tur: "", durum: "Boş", kackisi: "", neZaman: null },
+        { no: 4, tur: "", durum: "Boş", kackisi: "", neZaman: null },
+        { no: 5, tur: "", durum: "Boş", kackisi: "", neZaman: null },
+        { no: 6, tur: "", durum: "Boş", kackisi: "", neZaman: null },
+        { no: 7, tur: "", durum: "Boş", kackisi: "", neZaman: null },
+        { no: 8, tur: "", durum: "Boş", kackisi: "", neZaman: null },
+        { no: 9, tur: "", durum: "Boş", kackisi: "", neZaman: null },
     ]);
 
     const [filtrelenmisOdalar, setFiltrelenmisOdalar] = useState(odalar);
@@ -32,29 +39,49 @@ function OdalarimPage() {
 
         // Update the room type based on the selection
         if (yeniOda.tur === "Aile") {
-            guncellenmisOdalar[0] = {
-                ...guncellenmisOdalar[0],
-                tur: "Aile",
-                kackisi: yeniOda.kackisi,
-                durum: "Boş",
-                neZaman: null
-            };
+            // Find the first empty family room (multiple of 5)
+            const bosAileOdaIndex = guncellenmisOdalar.findIndex((oda, index) =>
+                index % 5 === 0 && (!oda.tur || oda.tur === "")
+            );
+
+            if (bosAileOdaIndex !== -1) {
+                guncellenmisOdalar[bosAileOdaIndex] = {
+                    ...guncellenmisOdalar[bosAileOdaIndex],
+                    tur: "Aile",
+                    kackisi: yeniOda.kackisi,
+                    durum: "Boş",
+                    neZaman: null
+                };
+            } else {
+                message.warning("Tüm aile odaları zaten tanımlanmış!");
+                return;
+            }
         } else if (yeniOda.tur === "Tek Kişilik") {
-            guncellenmisOdalar[1] = {
-                ...guncellenmisOdalar[1],
-                tur: "Tek Kişilik",
-                kackisi: yeniOda.kackisi,
-                durum: "Boş",
-                neZaman: null
-            };
+            // Update only odd-numbered rooms except 5
+            guncellenmisOdalar.forEach((oda, index) => {
+                if (index % 2 === 1 && index !== 5) {
+                    guncellenmisOdalar[index] = {
+                        ...oda,
+                        tur: "Tek Kişilik",
+                        kackisi: "1", // Always 1 person for single rooms
+                        durum: "Boş",
+                        neZaman: null
+                    };
+                }
+            });
         } else if (yeniOda.tur === "Çift Kişilik") {
-            guncellenmisOdalar[2] = {
-                ...guncellenmisOdalar[2],
-                tur: "Çift Kişilik",
-                kackisi: yeniOda.kackisi,
-                durum: "Boş",
-                neZaman: null
-            };
+            // Update only even-numbered rooms except multiples of 5
+            guncellenmisOdalar.forEach((oda, index) => {
+                if (index % 2 === 0 && index % 5 !== 0) {
+                    guncellenmisOdalar[index] = {
+                        ...oda,
+                        tur: "Çift Kişilik",
+                        kackisi: "2", // Always 2 people for double rooms
+                        durum: "Boş",
+                        neZaman: null
+                    };
+                }
+            });
         }
 
         setOdalar(guncellenmisOdalar);
@@ -150,7 +177,7 @@ function OdalarimPage() {
             <div className="header">
                 <h1>ODALARIM</h1>
                 <button className="define-button" onClick={() => setModalAcik(true)}>
-                    Oda Tanımla(Doldur)
+                    Oda Tanımla
                 </button>
             </div>
 
@@ -192,7 +219,7 @@ function OdalarimPage() {
                 <tbody>
                     {filtrelenmisOdalar.length === 0 && (
                         <tr>
-                            <td colSpan="5" style={{ textAlign: "center", padding: "20px", color: "gray" }}>
+                            <td colSpan="4" style={{ textAlign: "center", padding: "20px", color: "gray" }}>
                                 Uygun oda bulunamadı.
                             </td>
                         </tr>
@@ -202,13 +229,13 @@ function OdalarimPage() {
                         filtrelenmisOdalar.map((oda) => (
                             <tr key={oda?.no ?? 'unknown'}>
                                 <td>{oda?.no ?? '-'}</td>
-                                <td>{oda?.tur ?? '-'}</td>
+                                <td>{oda?.tur || '-'}</td>
                                 <td>{oda?.kackisi ? `${oda.kackisi} Kişilik` : '-'}</td>
                                 <td>
                                     <button
                                         onClick={() => handleRezervasyon(oda)}
                                         className="reserve-button"
-                                        disabled={!rezerveEdilebilirMi(oda)}
+                                        disabled={!rezerveEdilebilirMi(oda) || !oda.tur}
                                     >
                                         Rezerve Et
                                     </button>
