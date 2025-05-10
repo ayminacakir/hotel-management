@@ -14,25 +14,12 @@ function OdalarimPage() {
     const [kisiSayisi, setKisiSayisi] = useState("");
     const [secilenOda, setSecilenOda] = useState(null);
 
-    // Initialize rooms from localStorage or use default values
-    const [odalar, setOdalar] = useState(() => {
-        const savedOdalar = JSON.parse(localStorage.getItem("odalar"));
-        if (savedOdalar && Array.isArray(savedOdalar)) {
-            // Validate each room object
-            return savedOdalar.map(oda => ({
-                no: oda?.no ?? 0,
-                tur: oda?.tur ?? "",
-                durum: oda?.durum ?? "Boş",
-                kackisi: oda?.kackisi ?? "",
-                neZaman: oda?.neZaman ?? null
-            }));
-        }
-        return [
-            { no: 0, tur: "", durum: "Boş", kackisi: "", neZaman: null },
-            { no: 1, tur: "", durum: "Boş", kackisi: "", neZaman: null },
-            { no: 2, tur: "", durum: "Boş", kackisi: "", neZaman: null },
-        ];
-    });
+    // Initialize with 3 empty rooms
+    const [odalar, setOdalar] = useState([
+        { no: 0, tur: "", kackisi: "", },
+        { no: 1, tur: "", kackisi: "", },
+        { no: 2, tur: "", kackisi: "", },
+    ]);
 
     const [filtrelenmisOdalar, setFiltrelenmisOdalar] = useState(odalar);
 
@@ -41,28 +28,34 @@ function OdalarimPage() {
     }, [odalar]);
 
     const odaKaydet = (yeniOda) => {
-        let hedefOdaNo = -1;
-
-        if (yeniOda.tur === "Aile") {
-            hedefOdaNo = 0;
-        } else if (yeniOda.tur === "Tek Kişilik") {
-            hedefOdaNo = 1;
-        } else if (yeniOda.tur === "Çift Kişilik") {
-            hedefOdaNo = 2;
-        }
-
-        if (hedefOdaNo === -1) {
-            message.error("Geçersiz oda türü.");
-            return;
-        }
-
         const guncellenmisOdalar = [...odalar];
-        guncellenmisOdalar[hedefOdaNo] = {
-            ...yeniOda,
-            no: hedefOdaNo,
-            durum: "Boş",
-            neZaman: null
-        };
+
+        // Update the room type based on the selection
+        if (yeniOda.tur === "Aile") {
+            guncellenmisOdalar[0] = {
+                ...guncellenmisOdalar[0],
+                tur: "Aile",
+                kackisi: yeniOda.kackisi,
+                durum: "Boş",
+                neZaman: null
+            };
+        } else if (yeniOda.tur === "Tek Kişilik") {
+            guncellenmisOdalar[1] = {
+                ...guncellenmisOdalar[1],
+                tur: "Tek Kişilik",
+                kackisi: yeniOda.kackisi,
+                durum: "Boş",
+                neZaman: null
+            };
+        } else if (yeniOda.tur === "Çift Kişilik") {
+            guncellenmisOdalar[2] = {
+                ...guncellenmisOdalar[2],
+                tur: "Çift Kişilik",
+                kackisi: yeniOda.kackisi,
+                durum: "Boş",
+                neZaman: null
+            };
+        }
 
         setOdalar(guncellenmisOdalar);
         localStorage.setItem("odalar", JSON.stringify(guncellenmisOdalar));
@@ -191,8 +184,7 @@ function OdalarimPage() {
                     <tr>
                         <th>Oda No</th>
                         <th>Oda Türü</th>
-                        <th>Durum</th>
-                        <th>Ne Zaman Boşalacak</th>
+                        <th>Kişi Sayısı</th>
                         <th>İşlem</th>
                     </tr>
                 </thead>
@@ -211,8 +203,7 @@ function OdalarimPage() {
                             <tr key={oda?.no ?? 'unknown'}>
                                 <td>{oda?.no ?? '-'}</td>
                                 <td>{oda?.tur ?? '-'}</td>
-                                <td>{oda?.durum ?? '-'}</td>
-                                <td>{oda?.durum === "Dolu" ? (oda?.neZaman ?? '-') : "-"}</td>
+                                <td>{oda?.kackisi ? `${oda.kackisi} Kişilik` : '-'}</td>
                                 <td>
                                     <button
                                         onClick={() => handleRezervasyon(oda)}

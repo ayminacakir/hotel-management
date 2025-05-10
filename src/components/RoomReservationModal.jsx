@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Table, Tag, List, Typography, Input, DatePicker, message } from "antd";
+
 import dayjs from "dayjs";
 import "./RoomReservationModal.css";
 
@@ -10,6 +11,7 @@ function RoomReservationModal({ oda, onKapat }) {
     const [kayitlar, setKayitlar] = useState([]);
     const [musteri, setMusteri] = useState({ ad: "", soyad: "", email: "" });
     const [filtre, setFiltre] = useState({ baslangic: null, bitis: null });
+
 
     useEffect(() => {
         const odaDurumlari = JSON.parse(localStorage.getItem(`oda_${oda.no}_availability`));
@@ -108,6 +110,7 @@ function RoomReservationModal({ oda, onKapat }) {
             .then(response => response.text())
             .then(result => console.log("Google Sheets'e gönderildi:", result))
             .catch(error => console.log("Google Sheets hatası:", error));
+
     };
 
     const rezervasyonuSil = (silinecekRezervasyon) => {
@@ -332,6 +335,8 @@ function RoomReservationModal({ oda, onKapat }) {
                     )}
                 />
             </div>
+
+
         </Modal>
     );
 }

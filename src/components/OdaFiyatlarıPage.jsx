@@ -17,12 +17,15 @@ function OdaFiyatlarıPage() {
     { value: 'Aile', label: 'Aile' }
   ];
 
-  // Mevsimler
-  const mevsimler = [
-    { value: 'Yüksek Sezon', label: 'Yüksek Sezon' },
-    { value: 'Normal Sezon', label: 'Normal Sezon' },
-    { value: 'Düşük Sezon', label: 'Düşük Sezon' }
-  ];
+  // Calculate number of days between two dates
+  const calculateDays = (startDate, endDate) => {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
 
   useEffect(() => {
     // LocalStorage'dan mevcut fiyatları yükle
@@ -31,11 +34,14 @@ function OdaFiyatlarıPage() {
   }, []);
 
   const handleFiyatEkle = (values) => {
+    const days = calculateDays(values.tarihAraligi[0], values.tarihAraligi[1]);
+    const toplamFiyat = values.fiyat * days;
+
     const yeniFiyat = {
       id: Date.now(),
       odaTuru: values.odaTuru,
-      mevsim: values.mevsim,
       fiyat: values.fiyat,
+      toplamFiyat: toplamFiyat,
       tarihAraligi: {
         baslangic: values.tarihAraligi[0].format('YYYY-MM-DD'),
         bitis: values.tarihAraligi[1].format('YYYY-MM-DD')
@@ -64,11 +70,6 @@ function OdaFiyatlarıPage() {
       key: 'odaTuru',
     },
     {
-      title: 'Mevsim',
-      dataIndex: 'mevsim',
-      key: 'mevsim',
-    },
-    {
       title: 'Tarih Aralığı',
       key: 'tarihAraligi',
       render: (_, record) => (
@@ -76,10 +77,9 @@ function OdaFiyatlarıPage() {
       ),
     },
     {
-      title: 'Fiyat (TL)',
-      dataIndex: 'fiyat',
-      key: 'fiyat',
-      render: (fiyat) => `${fiyat} TL`,
+      title: 'Toplam Fiyat (TL)',
+      key: 'toplamFiyat',
+      render: (_, record) => `${record.toplamFiyat} TL`,
     },
     {
       title: 'İşlemler',
@@ -115,14 +115,6 @@ function OdaFiyatlarıPage() {
           </Form.Item>
 
           <Form.Item
-            name="mevsim"
-            label="Mevsim"
-            rules={[{ required: true, message: 'Lütfen mevsim seçin' }]}
-          >
-            <Select options={mevsimler} placeholder="Mevsim seçin" />
-          </Form.Item>
-
-          <Form.Item
             name="tarihAraligi"
             label="Tarih Aralığı"
             rules={[{ required: true, message: 'Lütfen tarih aralığı seçin' }]}
@@ -132,7 +124,7 @@ function OdaFiyatlarıPage() {
 
           <Form.Item
             name="fiyat"
-            label="Fiyat (TL)"
+            label="Günlük Fiyat (TL)"
             rules={[{ required: true, message: 'Lütfen fiyat girin' }]}
           >
             <InputNumber
