@@ -5,17 +5,46 @@ import dayjs from "dayjs";
 import "./RoomReservationModal.css";
 
 function RoomReservationModal({ oda, onKapat }) {
-    const [availability, setAvailability] = useState(generateAvailability(oda));
-    const [originalAvailability, setOriginalAvailability] = useState([]); // Filtre sıfırlama için
+    const [availability, setAvailability] = useState([]);
+    const [originalAvailability, setOriginalAvailability] = useState([]);
     const [secim, setSecim] = useState({ baslangic: null, bitis: null });
     const [kayitlar, setKayitlar] = useState([]);
     const [musteri, setMusteri] = useState({ ad: "", soyad: "", email: "" });
     const [filtre, setFiltre] = useState({ baslangic: null, bitis: null });
 
+    // Fiyat hesaplama fonksiyonu
+    const hesaplaFiyat = (baslangic, bitis) => {
+        const kayitliFiyatlar = JSON.parse(localStorage.getItem('odaFiyatlari')) || [];
+        const startDate = new Date(baslangic);
+        const endDate = new Date(bitis);
+
+        // Oda türü ve tarih aralığına uygun fiyatı bul
+        const matchingPrice = kayitliFiyatlar.find(fiyat =>
+            fiyat.odaTuru === oda.tur &&
+            new Date(fiyat.tarihAraligi.baslangic) <= startDate &&
+            new Date(fiyat.tarihAraligi.bitis) >= endDate
+        );
+
+        if (matchingPrice) {
+            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+            return matchingPrice.fiyat * days;
+        }
+        return 0;
+    };
+
+    // Tüm odaların availability verilerini sıfırla
+    const resetAllAvailability = () => {
+        for (let i = 0; i < 10; i++) {
+            localStorage.removeItem(`oda_${i}_availability`);
+        }
+    };
 
     useEffect(() => {
+        // Sayfa yüklendiğinde availability verilerini sıfırla
+        resetAllAvailability();
+
         const odaDurumlari = JSON.parse(localStorage.getItem(`oda_${oda.no}_availability`));
-        const data = odaDurumlari || generateAvailability(oda);
+        const data = odaDurumlari && odaDurumlari.length === 30 ? odaDurumlari : generateAvailability(oda);
         setAvailability(data);
         setOriginalAvailability(data);
 
@@ -322,17 +351,41 @@ function RoomReservationModal({ oda, onKapat }) {
                 <List
                     bordered
                     dataSource={kayitlar.filter(item => item.odaNo === oda.no)}
-                    renderItem={(item) => (
-                        <List.Item
-                            actions={[
-                                <Button type="link" danger onClick={() => rezervasyonuSil(item)}>
-                                    Sil
-                                </Button>
-                            ]}
-                        >
-                            Oda No: {item.odaNo} | {item.baslangic} - {item.bitis} | Müşteri: {item.musteri ? `${item.musteri.ad} ${item.musteri.soyad}` : 'Bilgi Yok'} | Email: {item.musteri ? item.musteri.email : 'Bilgi Yok'}
-                        </List.Item>
-                    )}
+                    renderItem={(item) => {
+                        const fiyat = hesaplaFiyat(item.baslangic, item.bitis);
+                        return (
+                            <List.Item
+                                actions={[
+                                    <Button
+                                        type="link"
+                                        danger
+                                        onClick={() => rezervasyonuSil(item)}
+                                        style={{
+                                            marginTop: '0',
+                                            padding: '0 8px',
+                                            height: 'auto',
+                                            lineHeight: '1.5'
+                                        }}
+                                    >
+                                        Sil
+                                    </Button>
+                                ]}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    padding: '12px 24px'
+                                }}
+                            >
+                                <div style={{ flex: 1 }}>
+                                    Oda No: {item.odaNo} | {item.baslangic} - {item.bitis} |
+                                    Müşteri: {item.musteri ? `${item.musteri.ad} ${item.musteri.soyad}` : 'Bilgi Yok'} |
+                                    Email: {item.musteri ? item.musteri.email : 'Bilgi Yok'} |
+                                    Fiyat: {fiyat > 0 ? `${fiyat} TL` : 'Fiyat Tanımlanmamış'}
+                                </div>
+                            </List.Item>
+                        );
+                    }}
                 />
             </div>
 
@@ -348,11 +401,13 @@ function generateAvailability(oda) {
 
     // Önce localStorage'dan mevcut availability'i kontrol et
     const mevcutAvailability = JSON.parse(localStorage.getItem(`oda_${oda.no}_availability`));
-    if (mevcutAvailability) {
+
+    // Eğer mevcut veri varsa ve 30 günlük ise kullan
+    if (mevcutAvailability && Array.isArray(mevcutAvailability) && mevcutAvailability.length === günSayisi) {
         return mevcutAvailability;
     }
 
-    // Eğer mevcut availability yoksa yeni oluştur
+    // Yeni 30 günlük veri oluştur
     for (let i = 0; i < günSayisi; i++) {
         const date = new Date(bugün);
         date.setDate(bugün.getDate() + i);
@@ -369,6 +424,7 @@ function generateAvailability(oda) {
         result.push({ tarih: formatted, durum });
     }
 
+    // Yeni veriyi kaydet
     localStorage.setItem(`oda_${oda.no}_availability`, JSON.stringify(result));
     return result;
 }
