@@ -40,19 +40,21 @@ function RoomReservationModal({ oda, onKapat }) {
     };
 
     useEffect(() => {
-        // Sayfa yüklendiğinde availability verilerini sıfırla
-        resetAllAvailability();
-
+        // Modal açıldığında availability verilerini yükle
         const odaDurumlari = JSON.parse(localStorage.getItem(`oda_${oda.no}_availability`));
-        const data = odaDurumlari && odaDurumlari.length === 30 ? odaDurumlari : generateAvailability(oda);
-        setAvailability(data);
-        setOriginalAvailability(data);
+        if (odaDurumlari && odaDurumlari.length > 0) {
+            setAvailability(odaDurumlari);
+            setOriginalAvailability(odaDurumlari);
+        } else {
+            const data = generateAvailability(oda);
+            setAvailability(data);
+            setOriginalAvailability(data);
+        }
 
         const tumRezervasyonlar = JSON.parse(localStorage.getItem("rezervasyonlar")) || [];
         const buOdaninRezervasyonlari = tumRezervasyonlar.filter(r => r.odaNo === oda.no);
         setKayitlar(buOdaninRezervasyonlari);
     }, [oda]);
-
     const handleMusteriChange = (e) => {
         const { name, value } = e.target;
         setMusteri({ ...musteri, [name]: value });
@@ -398,14 +400,6 @@ function generateAvailability(oda) {
     const günSayisi = 30;
     const bugün = new Date();
     const result = [];
-
-    // Önce localStorage'dan mevcut availability'i kontrol et
-    const mevcutAvailability = JSON.parse(localStorage.getItem(`oda_${oda.no}_availability`));
-
-    // Eğer mevcut veri varsa ve 30 günlük ise kullan
-    if (mevcutAvailability && Array.isArray(mevcutAvailability) && mevcutAvailability.length === günSayisi) {
-        return mevcutAvailability;
-    }
 
     // Yeni 30 günlük veri oluştur
     for (let i = 0; i < günSayisi; i++) {
