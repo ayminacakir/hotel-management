@@ -8,42 +8,83 @@ import {
     Typography,
     Card,
     Space,
-    message
+    message,
 } from "antd";
-import {
-    UserOutlined,
-    LockOutlined,
-    LoginOutlined
-} from "@ant-design/icons";
+import { UserOutlined, LockOutlined, LoginOutlined } from "@ant-design/icons";
 import "./LoginPage.css";
 
 const { Title } = Typography;
 
 function LoginPage() {
     const navigate = useNavigate();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [users, setUsers] = useState([]);
+
+    // Google Sheets'ten kullanıcı bilgilerini çek
+    useEffect(() => {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        const requestOptions = {
+            method: "GET",
+            headers: myHeaders,
+            redirect: "follow",
+        };
+
+        fetch(
+            "https://v1.nocodeapi.com/ayminacakir/google_sheets/GkEyitVfnggEgHEm?tabId=Sayfa2",
+            requestOptions
+        )
+            .then((response) => response.json())
+            .then((result) => {
+                if (!result.data) {
+                    throw new Error("Google Sheets verisi alınamadı");
+                }
+
+                const parsedUsers = result.data.map((row) => ({
+                    email: row["email"],
+                    password: row["şifre"],
+                }));
+
+                setUsers(parsedUsers);
+            })
+            .catch((error) => {
+                console.error("Veri çekme hatası:", error);
+                message.error("Kullanıcı verileri alınamadı.");
+            });
+    }, []);
 
     const onFinish = (values) => {
         const { email, password } = values;
 
-        if (email && password) {
-            localStorage.setItem("token", "some-auth-token");
-            setIsLoggedIn(true);
+        const matchedUser = users.find(
+            (user) => user.email === email && user.password === password
+        );
+
+        if (matchedUser) {
+            localStorage.setItem("token", "mock-token");
+            message.success("Giriş başarılı!");
+            navigate("/home");
         } else {
-            message.error("Lütfen email ve şifre giriniz.");
+            message.error("Geçersiz email veya şifre!");
         }
     };
 
-    useEffect(() => {
-        if (isLoggedIn) {
-            navigate("/home");
-        }
-    }, [isLoggedIn, navigate]);
-
     return (
-        <div className="login-page" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: "#f0f2f5" }}>
+        <div
+            className="login-page"
+            style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "100vh",
+                background: "#f0f2f5",
+            }}
+        >
             <Card style={{ width: 400, padding: 24 }}>
-                <Space direction="vertical" style={{ width: "100%", textAlign: "center" }}>
+                <Space
+                    direction="vertical"
+                    style={{ width: "100%", textAlign: "center" }}
+                >
                     <Title level={2}>GİRİŞ YAP</Title>
                     <LoginOutlined style={{ fontSize: 32, color: "#1890ff" }} />
                 </Space>
@@ -59,7 +100,7 @@ function LoginPage() {
                         name="email"
                         rules={[
                             { required: true, message: "Lütfen email adresinizi giriniz!" },
-                            { type: "email", message: "Geçerli bir email adresi giriniz!" }
+                            { type: "email", message: "Geçerli bir email adresi giriniz!" },
                         ]}
                     >
                         <Input
@@ -72,10 +113,7 @@ function LoginPage() {
                         name="password"
                         rules={[{ required: true, message: "Lütfen şifrenizi giriniz!" }]}
                     >
-                        <Input.Password
-                            prefix={<LockOutlined />}
-                            placeholder="Şifre"
-                        />
+                        <Input.Password prefix={<LockOutlined />} placeholder="Şifre" />
                     </Form.Item>
 
                     <Form.Item name="remember" valuePropName="checked">
