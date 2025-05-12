@@ -153,7 +153,7 @@ function RoomReservationModal({ oda, onKapat }) {
             );
             localStorage.setItem("rezervasyonlar", JSON.stringify(filtrelenmisRezervasyonlar));
 
-            // Kaydedilen rezervasyonları güncelle
+            // Kaydedilen rezervasyonları güncelleme
             const yeniKayitlar = filtrelenmisRezervasyonlar.filter(r => r.odaNo === silinecekRezervasyon.odaNo);
             setKayitlar(yeniKayitlar);
 
@@ -259,7 +259,7 @@ function RoomReservationModal({ oda, onKapat }) {
         const tumOdalar = JSON.parse(localStorage.getItem("odalar")) || [];
         const guncellenmisOdalar = tumOdalar.map(odaItem => {
             if (odaItem.no === oda.no) {
-                // Eğer odada dolu günler varsa, en son dolu günü bul
+                // Eğer odada dolu günler varsa, en son dolu günü bulma
                 const doluGunler = availability.filter(gun => gun.durum === "Dolu");
                 if (doluGunler.length > 0) {
                     const enSonDoluGun = doluGunler.reduce((latest, current) => {

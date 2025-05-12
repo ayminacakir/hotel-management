@@ -19,7 +19,7 @@ function LoginPage() {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
 
-    // Google Sheets'ten kullanıcı bilgilerini çek
+    // Google Sheets'ten kullanıcı bilgilerini çekiyoruz
     useEffect(() => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");

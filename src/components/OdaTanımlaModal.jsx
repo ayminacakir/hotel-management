@@ -9,7 +9,7 @@ function OdaTanımlaModal({ onKapat, onKaydet }) {
 
     const handleRoomTypeChange = (value) => {
         setSelectedRoomType(value);
-        // Reset kacKisi when room type changes
+        // Oda tipi değiştiğinde kaç kişi alanını sıfırla
         form.setFieldsValue({ kacKisi: value === "Aile" ? 3 : value === "Çift Kişilik" ? 2 : 1 });
     };
 

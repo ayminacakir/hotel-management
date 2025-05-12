@@ -17,7 +17,7 @@ function OdaFiyatlarıPage() {
     { value: 'Aile', label: 'Aile' }
   ];
 
-  // Calculate number of days between two dates
+  // İki tarih arasındaki gün sayısını hesaplama
   const calculateDays = (startDate, endDate) => {
     if (!startDate || !endDate) return 0;
     const start = new Date(startDate);
@@ -28,7 +28,7 @@ function OdaFiyatlarıPage() {
   };
 
   useEffect(() => {
-    // LocalStorage'dan mevcut fiyatları yükle
+    // LocalStorage'dan mevcut fiyatları yükleme
     const kayitliFiyatlar = JSON.parse(localStorage.getItem('odaFiyatlari')) || [];
     setFiyatlar(kayitliFiyatlar);
   }, []);

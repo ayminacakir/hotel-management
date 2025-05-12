@@ -37,9 +37,9 @@ function OdalarimPage() {
     const odaKaydet = (yeniOda) => {
         const guncellenmisOdalar = [...odalar];
 
-        // Update the room type based on the selection
+        // Seçime göre odaları güncelleme
         if (yeniOda.tur === "Aile") {
-            // Find the first empty family room (multiple of 5)
+            // İlk boş aile odasını bulma (5 in katı olanlar)
             const bosAileOdaIndex = guncellenmisOdalar.findIndex((oda, index) =>
                 index % 5 === 0 && (!oda.tur || oda.tur === "")
             );
@@ -57,26 +57,26 @@ function OdalarimPage() {
                 return;
             }
         } else if (yeniOda.tur === "Tek Kişilik") {
-            // Update only odd-numbered rooms except 5
+            // 5 harici sadece tek sayı olan odaları güncelleme
             guncellenmisOdalar.forEach((oda, index) => {
                 if (index % 2 === 1 && index !== 5) {
                     guncellenmisOdalar[index] = {
                         ...oda,
                         tur: "Tek Kişilik",
-                        kackisi: "1", // Always 1 person for single rooms
+                        kackisi: "1", // Tek kişilik odalarda her zaman 1 kişi olmalı
                         durum: "Boş",
                         neZaman: null
                     };
                 }
             });
         } else if (yeniOda.tur === "Çift Kişilik") {
-            // Update only even-numbered rooms except multiples of 5
+            // 5 in katları harici sadece çift sayı olan odaları güncelleme
             guncellenmisOdalar.forEach((oda, index) => {
                 if (index % 2 === 0 && index % 5 !== 0) {
                     guncellenmisOdalar[index] = {
                         ...oda,
                         tur: "Çift Kişilik",
-                        kackisi: "2", // Always 2 people for double rooms
+                        kackisi: "2", // Çift kişilik odalarda her zaman 2 kişi olmalı
                         durum: "Boş",
                         neZaman: null
                     };
@@ -112,7 +112,7 @@ function OdalarimPage() {
         const secilenKisiSayisi = parseInt(kisiSayisi);
 
         const sonuc = odalar.filter((oda) => {
-            if (!oda) return false;  // Skip null or undefined rooms
+            if (!oda) return false;  // Boş veya tanımsız odaları atla
 
             if (oda.durum === "Dolu" && secilenTarih) {
                 const bosalacakTarih = oda.neZaman ? new Date(oda.neZaman) : null;
