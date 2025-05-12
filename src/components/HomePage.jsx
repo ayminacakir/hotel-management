@@ -1,4 +1,4 @@
-// HomePage.jsx
+
 import {
     BellOutlined,
     HomeTwoTone,
@@ -17,7 +17,7 @@ import {
 } from "antd";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import "./HomePage.css";
+
 
 import OdaFiyatları from "./OdaFiyatlarıPage";
 import OdalarımPage from "./OdalarımPage";

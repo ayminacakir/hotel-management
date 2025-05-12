@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import "./OdalarımPage.css";
+
 import OdaTanımlaModal from "./OdaTanımlaModal";
 import { useEffect } from "react";
 import RoomReservationModal from "./RoomReservationModal";
-import { message } from "antd";
+import { Button, Select, Table, Typography, Space, message } from "antd";
 
 function OdalarimPage() {
     const [tarih, setTarih] = useState("");
@@ -171,80 +171,101 @@ function OdalarimPage() {
 
         return `${oda.neZaman} sonrası uygun`;
     };
+    const { Title } = Typography;
+    const { Option } = Select;
+
 
     return (
-        <div className="container">
-            <div className="header">
-                <h1>ODALARIM</h1>
-                <button className="define-button" onClick={() => setModalAcik(true)}>
-                    Oda Tanımla
-                </button>
-            </div>
-
-            <div className="filters">
-                <div>
-                    <label>Oda Türü</label>
-                    <select value={odaTuru} onChange={(e) => setOdaTuru(e.target.value)}>
-                        <option>Oda Türü Seçiniz</option>
-                        <option>Tek Kişilik</option>
-                        <option>Çift Kişilik</option>
-                        <option>Aile</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Kalacak Kişi Sayısı</label>
-                    <select value={kisiSayisi} onChange={(e) => setKisiSayisi(e.target.value)}>
-                        <option>Kaç Kişi Seçiniz</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                    </select>
+        <div style={{ padding: "24px" }}>
+            <Space direction="vertical" style={{ width: "100%" }}>
+                {/* Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Title level={2}>ODALARIM</Title>
+                    <Button type="primary" onClick={() => setModalAcik(true)}>
+                        Oda Tanımla
+                    </Button>
                 </div>
 
-                <button className="search-button" onClick={filtrasyonuUygula}>ARA </button>
-                <button className="clear-button" onClick={filtreleriTemizle}>TEMİZLE </button>
-            </div>
+                {/* Filters */}
+                <Space style={{ marginBottom: "16px" }} size="large">
+                    <div>
+                        <label>Oda Türü</label>
+                        <Select
+                            placeholder="Oda Türü Seçiniz"
+                            value={odaTuru}
+                            onChange={(value) => setOdaTuru(value)}
+                            style={{ width: 200 }}
+                        >
+                            <Option value="Tek Kişilik">Tek Kişilik</Option>
+                            <Option value="Çift Kişilik">Çift Kişilik</Option>
+                            <Option value="Aile">Aile</Option>
+                        </Select>
+                    </div>
+                    <div>
+                        <label>Kalacak Kişi Sayısı</label>
+                        <Select
+                            placeholder="Kaç Kişi Seçiniz"
+                            value={kisiSayisi}
+                            onChange={(value) => setKisiSayisi(value)}
+                            style={{ width: 200 }}
+                        >
+                            <Option value="1">1</Option>
+                            <Option value="2">2</Option>
+                            <Option value="3">3</Option>
+                            <Option value="4">4</Option>
+                        </Select>
+                    </div>
+                    <Button type="primary" onClick={filtrasyonuUygula}>
+                        ARA
+                    </Button>
+                    <Button onClick={filtreleriTemizle}>TEMİZLE</Button>
+                </Space>
 
-            <table className="room-table">
-                <thead>
-                    <tr>
-                        <th>Oda No</th>
-                        <th>Oda Türü</th>
-                        <th>Kişi Sayısı</th>
-                        <th>İşlem</th>
-                    </tr>
-                </thead>
+                {/* Table */}
+                <Table
+                    dataSource={filtrelenmisOdalar}
+                    columns={[
+                        {
+                            title: "Oda No",
+                            dataIndex: "no",
+                            key: "no",
+                            render: (text) => text ?? "-",
+                        },
+                        {
+                            title: "Oda Türü",
+                            dataIndex: "tur",
+                            key: "tur",
+                            render: (text) => text || "-",
+                        },
+                        {
+                            title: "Kişi Sayısı",
+                            dataIndex: "kackisi",
+                            key: "kackisi",
+                            render: (text) => (text ? `${text} Kişilik` : "-"),
+                        },
+                        {
+                            title: "İşlem",
+                            key: "action",
+                            render: (_, oda) => (
+                                <Button
+                                    type="primary"
+                                    onClick={() => handleRezervasyon(oda)}
+                                    disabled={!rezerveEdilebilirMi(oda) || !oda.tur}
+                                >
+                                    Rezerve Et
+                                </Button>
+                            ),
+                        },
+                    ]}
+                    rowKey={(oda) => oda?.no ?? "unknown"}
+                    locale={{
+                        emptyText: "Uygun oda bulunamadı.",
+                    }}
+                    pagination={false}
+                />
+            </Space>
 
-                <tbody>
-                    {filtrelenmisOdalar.length === 0 && (
-                        <tr>
-                            <td colSpan="4" style={{ textAlign: "center", padding: "20px", color: "gray" }}>
-                                Uygun oda bulunamadı.
-                            </td>
-                        </tr>
-                    )}
-
-                    {filtrelenmisOdalar.length > 0 &&
-                        filtrelenmisOdalar.map((oda) => (
-                            <tr key={oda?.no ?? 'unknown'}>
-                                <td>{oda?.no ?? '-'}</td>
-                                <td>{oda?.tur || '-'}</td>
-                                <td>{oda?.kackisi ? `${oda.kackisi} Kişilik` : '-'}</td>
-                                <td>
-                                    <button
-                                        onClick={() => handleRezervasyon(oda)}
-                                        className="reserve-button"
-                                        disabled={!rezerveEdilebilirMi(oda) || !oda.tur}
-                                    >
-                                        Rezerve Et
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                </tbody>
-            </table>
-
+            {/* Modals */}
             {modalAcik && (
                 <OdaTanımlaModal
                     onKapat={() => setModalAcik(false)}

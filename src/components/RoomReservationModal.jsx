@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Table, Tag, List, Typography, Input, DatePicker, message } from "antd";
 
 import dayjs from "dayjs";
-import "./RoomReservationModal.css";
+
 
 function RoomReservationModal({ oda, onKapat }) {
     const [availability, setAvailability] = useState([]);
