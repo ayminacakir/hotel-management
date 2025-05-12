@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, InputNumber, DatePicker, Select, Table, Button, Typography, message } from 'antd';
 import dayjs from 'dayjs';
-import './OdaFiyatlarıPage.css';
+
 
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
@@ -97,10 +97,24 @@ function OdaFiyatlarıPage() {
   ];
 
   return (
-    <div className="oda-fiyatlari-container">
+    <div
+      style={{
+        padding: "24px",
+        maxWidth: "1200px",
+        margin: "0 auto",
+      }}
+    >
       <Title level={2}>Oda Fiyatları Yönetimi</Title>
 
-      <div className="fiyat-form-container">
+      <div
+        style={{
+          background: "white",
+          padding: "24px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+          marginBottom: "24px",
+        }}
+      >
         <Form
           form={form}
           onFinish={handleFiyatEkle}
@@ -109,7 +123,7 @@ function OdaFiyatlarıPage() {
           <Form.Item
             name="odaTuru"
             label="Oda Türü"
-            rules={[{ required: true, message: 'Lütfen oda türü seçin' }]}
+            rules={[{ required: true, message: "Lütfen oda türü seçin" }]}
           >
             <Select options={odaTurleri} placeholder="Oda türü seçin" />
           </Form.Item>
@@ -117,21 +131,21 @@ function OdaFiyatlarıPage() {
           <Form.Item
             name="tarihAraligi"
             label="Tarih Aralığı"
-            rules={[{ required: true, message: 'Lütfen tarih aralığı seçin' }]}
+            rules={[{ required: true, message: "Lütfen tarih aralığı seçin" }]}
           >
-            <RangePicker style={{ width: '100%' }} />
+            <RangePicker style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item
             name="fiyat"
             label="Günlük Fiyat (TL)"
-            rules={[{ required: true, message: 'Lütfen fiyat girin' }]}
+            rules={[{ required: true, message: "Lütfen fiyat girin" }]}
           >
             <InputNumber
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               min={0}
-              formatter={value => `${value} TL`}
-              parser={value => value.replace(' TL', '')}
+              formatter={(value) => `${value} TL`}
+              parser={(value) => value.replace(" TL", "")}
             />
           </Form.Item>
 
@@ -143,7 +157,14 @@ function OdaFiyatlarıPage() {
         </Form>
       </div>
 
-      <div className="fiyat-tablo-container">
+      <div
+        style={{
+          background: "white",
+          padding: "24px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        }}
+      >
         <Table
           columns={columns}
           dataSource={fiyatlar}

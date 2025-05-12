@@ -9,17 +9,17 @@ import {
     Card,
     Space,
     message,
+    Alert,
 } from "antd";
 import { UserOutlined, LockOutlined, LoginOutlined } from "@ant-design/icons";
-import "./LoginPage.css";
 
 const { Title } = Typography;
 
 function LoginPage() {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
+    const [errorMessage, setErrorMessage] = useState(""); // Hata mesajı için state
 
-    // Google Sheets'ten kullanıcı bilgilerini çekiyoruz
     useEffect(() => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -65,19 +65,18 @@ function LoginPage() {
             message.success("Giriş başarılı!");
             navigate("/home");
         } else {
-            message.error("Geçersiz email veya şifre!");
+            setErrorMessage("Email veya şifre yanlış!"); // Hata mesajını ayarla
         }
     };
 
     return (
         <div
-            className="login-page"
             style={{
+                minHeight: "100vh",
+                background: "linear-gradient(to bottom right, #f3efaf, #e0f7fa)",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                minHeight: "100vh",
-                background: "#f0f2f5",
             }}
         >
             <Card style={{ width: 400, padding: 24 }}>
@@ -88,6 +87,16 @@ function LoginPage() {
                     <Title level={2}>GİRİŞ YAP</Title>
                     <LoginOutlined style={{ fontSize: 32, color: "#1890ff" }} />
                 </Space>
+
+                {/* Hata mesajı */}
+                {errorMessage && (
+                    <Alert
+                        message={errorMessage}
+                        type="error"
+                        showIcon
+                        style={{ marginBottom: 16 }}
+                    />
+                )}
 
                 <Form
                     name="login"
