@@ -135,7 +135,7 @@ function RoomReservationModal({ oda, onKapat }) {
             ])
         };
 
-        fetch("https://v1.nocodeapi.com/ayminacakir/google_sheets/GkEyitVfnggEgHEm?tabId=Sayfa1", requestOptions)
+        fetch("https://v1.nocodeapi.com/hasibe/google_sheets/vckovlWJXuEUTdVe?tabId=Sayfa1", requestOptions)
             .then(response => response.text())
             .then(result => console.log("Google Sheets'e gönderildi:", result))
             .catch(error => console.log("Google Sheets hatası:", error));

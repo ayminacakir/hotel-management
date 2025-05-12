@@ -37,7 +37,7 @@ function RoomStatusReport() {
 
         console.log("Fetching data from API...");
         fetch(
-            "https://v1.nocodeapi.com/ayminacakir/google_sheets/GkEyitVfnggEgHEm?tabId=Sayfa1",
+            "https://v1.nocodeapi.com/hasibe/google_sheets/vckovlWJXuEUTdVe?tabId=Sayfa1",
             requestOptions
         )
             .then((res) => {
