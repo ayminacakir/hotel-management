@@ -125,9 +125,7 @@ function LoginPage() {
                         <Input.Password prefix={<LockOutlined />} placeholder="Şifre" />
                     </Form.Item>
 
-                    <Form.Item name="remember" valuePropName="checked">
-                        <Checkbox>Beni Hatırla</Checkbox>
-                    </Form.Item>
+
 
                     <Form.Item>
                         <Button type="primary" htmlType="submit" block>
