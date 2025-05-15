@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { Modal, Button, Table, Tag, List, Typography, Input, DatePicker, message } from "antd";
 
 import dayjs from "dayjs";
@@ -12,6 +12,8 @@ function RoomReservationModal({ oda, onKapat }) {
     const [musteri, setMusteri] = useState({ ad: "", soyad: "", email: "" });
     const [filtre, setFiltre] = useState({ baslangic: null, bitis: null });
 
+
+    useEffect(() => { console.log(availability) }, [availability]);
     // Fiyat hesaplama fonksiyonu
     const hesaplaFiyat = (baslangic, bitis) => {
         const kayitliFiyatlar = JSON.parse(localStorage.getItem('odaFiyatlari')) || [];
@@ -184,9 +186,11 @@ function RoomReservationModal({ oda, onKapat }) {
     };
 
     const clearFilter = () => {
-        setAvailability(originalAvailability);
+        // availability'yi originalAvailability ile sıfırla
+        setAvailability([...originalAvailability]);
         setFiltre({ baslangic: null, bitis: null });
     };
+
 
     const resetAvailability = () => {
         const updatedAvailability = originalAvailability.map(gün =>
