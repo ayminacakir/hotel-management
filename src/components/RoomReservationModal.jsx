@@ -5,8 +5,8 @@ import dayjs from "dayjs";
 
 
 function RoomReservationModal({ oda, onKapat }) {
-    const [availability, setAvailability] = useState([]);
-    const [originalAvailability, setOriginalAvailability] = useState([]);
+    const [availability, setAvailability] = useState([]); //Odanın günlük müsaitlik durumlarını tutar.
+    const [originalAvailability, setOriginalAvailability] = useState([]); //Odanın orijinal müsaitlik durumlarını saklar (filtreleme sonrası sıfırlamak için)
     const [secim, setSecim] = useState({ baslangic: null, bitis: null });
     const [kayitlar, setKayitlar] = useState([]);
     const [musteri, setMusteri] = useState({ ad: "", soyad: "", email: "" });
@@ -14,6 +14,7 @@ function RoomReservationModal({ oda, onKapat }) {
 
 
     useEffect(() => { console.log(availability) }, [availability]);
+
     // Fiyat hesaplama fonksiyonu
     const hesaplaFiyat = (baslangic, bitis) => {
         const kayitliFiyatlar = JSON.parse(localStorage.getItem('odaFiyatlari')) || [];
